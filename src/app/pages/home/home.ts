@@ -1,6 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { CsvParser } from '../../services/csv-parser';
 import { Movie } from '../../models/movie.model';
+import { TmdbService } from '../../services/tmdb';
+import { from, concatMap } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -10,6 +12,7 @@ import { Movie } from '../../models/movie.model';
 })
 export class Home {
   private csvParser = inject(CsvParser);
+  private tmdbService = inject(TmdbService);
   movies = signal<Movie[]>([]);
 
   async onFileSelected(event: Event): Promise<void> {
@@ -26,5 +29,16 @@ export class Home {
         console.error('Erro ao processar arquivo csv: ', error);
       }
     }
+  }
+
+  enrichMovies(): void {    
+    from(this.movies()).pipe(
+      concatMap(movie => this.tmdbService.enrichMovie(movie))
+    ).subscribe({
+      next: (enrichedMovie: Movie) => {
+        this.movies.update(movies => movies.map(item => item.letterboxd_URL === enrichedMovie.letterboxd_URL ? {...item, ...enrichedMovie} : item));
+      },
+      error: (err) => console.error(err)
+    });
   }
 }
