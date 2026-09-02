@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Observable, switchMap, map } from 'rxjs';
+import { Observable, switchMap, map, throwError } from 'rxjs';
 import { Movie, TmdbMovieDetails, TmdbSearchResponse } from '../models/movie.model';
 
 @Injectable({ providedIn: 'root' })
@@ -31,9 +31,13 @@ export class TmdbService {
 
   enrichMovie(movie: Movie): Observable<Movie> {
     return this.searchMovie(movie.title, movie.release_year).pipe(
+      // switchMap transforma um valor emitido em um novo Observable e cancela automaticamente a requisição ou inscrição anterior se um novo valor chegar antes do término;
       switchMap(response => {
+        if (!response.results.length) { // checa se array esta vazio;
+          return throwError(() => new Error(`Movie was not found: ${movie.title}`));
+        }
         const id = response.results[0].id;
-        return this.getMovieDetails(id);
+        return this.getMovieDetails(id);        
       }),
       map(details => {
         return { ...movie, ...details };
