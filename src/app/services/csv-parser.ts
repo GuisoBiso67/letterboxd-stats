@@ -12,7 +12,7 @@ export class CsvParser {
       
       reader.onload = (event) => {
         const conteudo = event.target?.result as string;
-        const linhas = conteudo.split('\n').slice(1);
+        const linhas = conteudo.split('\n').slice(1).filter(linha => linha.trim() !== '');
         const filmes: Movie[] = [];
         
         for (const linha of linhas) {
