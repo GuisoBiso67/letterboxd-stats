@@ -23,5 +23,18 @@ export interface TmdbMovieDetails {
   production_countries: { iso_3166_1: string; name: string }[];
   credits: {
     cast: { id: number; name: string; character: string }[];
+    crew: { id: number; name: string; job: string }[];
   };
+}
+
+export interface StatItem {
+  term: string;
+  count: number;
+}
+
+export interface StatsList {
+  genres: StatItem[];
+  countries: StatItem[];
+  cast: StatItem[];
+  directors: StatItem[];
 }
