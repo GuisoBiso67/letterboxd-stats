@@ -1,5 +1,10 @@
 <p>home works!</p>
 <input type="file" (change)="onFileSelected($event)" accept=".csv">
-@for (movie of movies(); track movie.letterboxd_URL) {
-  <li>{{ movie.title }}</li>
+<br>
+@if (movies().length > 0) {
+  <button (click)="enrichMovies()" >Search movies information</button>
+  
+  @for (movie of movies(); track movie.letterboxd_URL) {
+    <li>{{ movie.title }}</li>
+  }
 }

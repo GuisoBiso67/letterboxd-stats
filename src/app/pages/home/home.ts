@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { CsvParser } from '../../services/csv-parser';
 import { Movie } from '../../models/movie.model';
 import { TmdbService } from '../../services/tmdb';
-import { from, concatMap } from 'rxjs';
+import { from, concatMap, delay } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -33,9 +33,10 @@ export class Home {
 
   enrichMovies(): void {    
     from(this.movies()).pipe(
-      concatMap(movie => this.tmdbService.enrichMovie(movie))
+      concatMap(movie => this.tmdbService.enrichMovie(movie).pipe(delay(250)))
     ).subscribe({
       next: (enrichedMovie: Movie) => {
+        console.log('Filme enriquecido:', enrichedMovie);
         this.movies.update(movies => movies.map(item => item.letterboxd_URL === enrichedMovie.letterboxd_URL ? {...item, ...enrichedMovie} : item));
       },
       error: (err) => console.error(err)
