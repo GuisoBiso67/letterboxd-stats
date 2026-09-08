@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Movie } from '../models/movie.model';
+import { Movie, WatchEntry } from '../models/movie.model';
 
 @Injectable({
   providedIn: 'root',
@@ -11,25 +11,38 @@ export class CsvParser {
       const reader = new FileReader();
       
       reader.onload = (event) => {
-        const conteudo = event.target?.result as string;
-        const linhas = conteudo.split('\n').slice(1).filter(linha => linha.trim() !== '');
-        const filmes: Movie[] = [];
+        const content = event.target?.result as string;
+        const lines = content.split('\n').slice(1).filter(line => line.trim() !== '');
+
+        const moviesMap: Record<string, Movie> = {}; // cria um "dicinario" para facilitar buscas usando title+year;
         
-        for (const linha of linhas) {
-          const colunas = linha.split(',');
-          
-          const filme: Movie = {
-            title: colunas[1],
-            release_year: Number(colunas[2]),
-            log_date: new Date(colunas[0]), // assim ele retorna um objeto data;
-            rating: Number(colunas[4])*10,
-            letterboxd_URL: colunas[3]
+        for (const line of lines) {
+          const columns = line.split(',');
+
+          const key = `${columns[1]}-${columns[2]}`; // verificar repetições depois, melhorar isso aqui;
+
+          const entry: WatchEntry = {
+            watched_date: new Date(columns[7]),
+            rating: Number(columns[4])*10,
+            rewatch: columns[5] === "Yes" ? true : false,
+            letterboxd_URL: columns[3]
           }
-          filmes.push(filme);
+
+          if(moviesMap[key]){
+            moviesMap[key].entries.push(entry);
+            moviesMap[key].last_rating = entry.rating; // sobrescreve ultima nota;
+          }else{
+            moviesMap[key] = {
+              title: columns[1],
+              release_year: Number(columns[2]),
+              last_rating: entry.rating, // qual valor aqui?
+              entries: [entry] // array com só essa entry por enquanto
+            };
+          }
         }
-        resolve(filmes);
+        resolve(Object.values(moviesMap));
       };
-      reader.onerror = () => reject('Erro ao ler o arquivo');
+      reader.onerror = () => reject('Error reading the file.');
       reader.readAsText(file);
     });
   }

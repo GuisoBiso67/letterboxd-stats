@@ -1,11 +1,26 @@
 export interface Movie extends Partial<TmdbMovieDetails>{
   title: string;
   release_year: number;
-  log_date: Date;
-  rating: number; // converter para inteiro na hora que ler do csv e dividir por 10 depois para exibir na pagina;
-  letterboxd_URL: string;
+
+  last_rating: number; // converter para inteiro na hora que ler do csv e dividir por 10 depois para exibir na pagina;
+  entries: WatchEntry[];
+
+  tmdb_id?: number; // chega depois do enriquecimento (retorno da API TMDB);
 }
 // Partial<T> permite que os novos campos (de TmdbMovieDetails) sejam todos opcionais. Isso é perfeito pois nao teremos aqueles dados incialmente;
+
+export interface WatchEntry {
+  watched_date: Date;
+  rating: number;
+  rewatch: boolean;
+  letterboxd_URL: string;
+}
+
+export interface RatingPoint { // especifico para o grafico de pontos
+  movie_title: string
+  rating: number
+  watched_date: Date
+}
 
 export interface TmdbSearchResponse {
   results: TmdbMovie[];
