@@ -37,7 +37,12 @@ export class Home {
     ).subscribe({
       next: (enrichedMovie: Movie) => {
         console.log('Filme enriquecido:', enrichedMovie);
-        this.movies.update(movies => movies.map(item => item.letterboxd_URL === enrichedMovie.letterboxd_URL ? {...item, ...enrichedMovie} : item));
+        // alterar isso após a chegado dos IDs únicos;
+        this.movies.update(movies => movies.map(item => 
+          item.title === enrichedMovie.title && item.release_year === enrichedMovie.release_year 
+            ? {...item, ...enrichedMovie} 
+            : item
+        ));
       },
       error: (err) => console.error(err)
     });
