@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CsvParser } from '../../services/csv-parser';
 import { Movie, StatsList } from '../../models/movie.model';
 import { TmdbService } from '../../services/tmdb';
@@ -9,6 +9,7 @@ import { Stats } from '../../services/stats';
   selector: 'app-home',
   imports: [],
   templateUrl: './home.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './home.scss',
 })
 export class Home {
