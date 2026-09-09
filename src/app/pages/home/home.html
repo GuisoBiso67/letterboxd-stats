@@ -4,7 +4,7 @@
 @if (movies().length > 0) {
   <button (click)="enrichMovies()" >Search movies information</button>
   
-  @for (movie of movies(); track movie.id) {
+  @for (movie of movies(); track movie.title + movie.release_year) {
     <li>{{ movie.title }}</li>
   }
 }
