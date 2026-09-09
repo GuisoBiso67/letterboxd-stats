@@ -4,7 +4,7 @@
 @if (movies().length > 0) {
   <button (click)="enrichMovies()" >Search movies information</button>
   
-  @for (movie of movies(); track movie.letterboxd_URL) {
+  @for (movie of movies(); track movie.id) {
     <li>{{ movie.title }}</li>
   }
 }
