@@ -1,13 +1,13 @@
 <p>home works!</p>
 <input type="file" (change)="onFileSelected($event)" accept=".csv">
 <br>
-@if (movies().length > 0) {
+@if (stateService.movies().length > 0) {
   <button (click)="enrichMovies()" >Search movies information</button>
   
-  @for (movie of movies(); track movie.title + movie.release_year) {
+  @for (movie of stateService.movies(); track movie.title + movie.release_year) {
     <li>{{ movie.title }}</li>
   }
 }
-@if (stats_data()) {
-  <app-genres [genres]="stats_data()!.genres"></app-genres>
+@if (stateService.stats_data()) {
+  <app-genres [genres]="stateService.stats_data()!.genres"></app-genres>
 }
