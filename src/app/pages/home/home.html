@@ -1,6 +1,20 @@
 <p>home works!</p>
 <input type="file" (change)="onFileSelected($event)" accept=".csv">
-<br>
+
+<br><br>
+@if (totalCount() > 0) {
+  <div class="progress-track">
+    <div 
+      class="progress-fill" 
+      [style.width.%]="percentage()"
+      [style.background-color]="progressColor()">
+    </div>
+  </div>
+
+  <p>{{ processedCount() }} / {{ totalCount() }} movies processed ({{ percentage() }}%)</p>
+}
+<br><br>
+
 @if (stateService.movies().length > 0) {
   <button (click)="enrichMovies()" >Search movies information</button>
   
@@ -8,6 +22,7 @@
     <li>{{ movie.title }}</li>
   }
 }
+
 @if (stateService.stats_data()) {
   <app-genres [genres]="stateService.stats_data()!.genres"></app-genres>
 }

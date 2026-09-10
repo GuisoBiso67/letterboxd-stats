@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy, computed } from '@angular/core';
 import { CsvParser } from '../../services/csv-parser';
 import { Movie, StatsList } from '../../models/movie.model';
 import { TmdbService } from '../../services/tmdb';
@@ -20,6 +20,29 @@ export class Home {
   private statsService = inject(Stats);
   readonly stateService = inject(State);
 
+  processedCount = signal(0);
+  totalCount = signal(0);
+
+  readonly percentage = computed(() => {
+    const total = this.totalCount();
+    if (total === 0) return 0;
+    return Math.min(100, Math.round((this.processedCount() / total) * 100));
+  });
+
+  readonly progressColor = computed(() => {
+    const p = this.percentage();
+
+    // 0% a 50%: Transição Laranja -> Verde
+    if (p <= 50) {
+      const ratio = p * 2;
+      return `color-mix(in srgb, var(--accent-green) ${ratio}%, var(--accent-orange))`;
+    }
+
+    // 51% a 100%: Transição Verde -> Azul
+    const ratio = (p - 50) * 2;
+    return `color-mix(in srgb, var(--accent-blue) ${ratio}%, var(--accent-green))`;
+  });
+
   async onFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
 
@@ -30,6 +53,8 @@ export class Home {
         const movieList: Movie[] = await this.csvParser.parse(file);
         console.log('Successfully imported movies:', movieList);
         this.stateService.movies.set(movieList);
+        this.totalCount.set(movieList.length);
+        console.log(this.totalCount());
       } catch(error){
         console.error('Error processing csv file: ', error);
       }
@@ -38,7 +63,7 @@ export class Home {
 
   enrichMovies(): void {    
     from(this.stateService.movies()).pipe(
-      concatMap(movie => this.tmdbService.enrichMovie(movie).pipe(delay(250)))
+      concatMap(movie => this.tmdbService.enrichMovie(movie).pipe(delay(250))),
     ).subscribe({
       next: (enrichedMovie: Movie) => {
         console.log('Movie enriched:', enrichedMovie);
@@ -48,6 +73,7 @@ export class Home {
             ? {...item, ...enrichedMovie} 
             : item
         ));
+        this.processedCount.update(count => count +1);
       },
       error: (err) => console.error(err),
       complete: () => {

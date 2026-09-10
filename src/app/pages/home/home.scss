@@ -1,0 +1,24 @@
+@use '../../../styles/variables' as *;
+
+// Passa as variáveis SCSS para CSS variables para o color-mix funcionar
+:host {
+  --accent-orange: #{$color-accent-orange};
+  --accent-green: #{$color-accent-green};
+  --accent-blue: #{$color-accent-blue};
+}
+
+.progress-track {
+  width: 50%;
+  height: 20px;
+  border-radius: 10px;
+  background-color: $color-white;
+  overflow: hidden;
+  margin-inline: auto;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 10px;
+  /* Transição suave tanto para o preenchimento quanto para a cor */
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
