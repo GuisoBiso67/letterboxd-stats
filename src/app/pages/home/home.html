@@ -8,3 +8,6 @@
     <li>{{ movie.title }}</li>
   }
 }
+@if (stats_data()) {
+  <app-genres [genres]="stats_data()!.genres"></app-genres>
+}

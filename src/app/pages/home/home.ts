@@ -4,10 +4,11 @@ import { Movie, StatsList } from '../../models/movie.model';
 import { TmdbService } from '../../services/tmdb';
 import { from, concatMap, delay } from 'rxjs';
 import { Stats } from '../../services/stats';
+import { Genres } from '../genres/genres';
 
 @Component({
   selector: 'app-home',
-  imports: [],
+  imports: [Genres],
   templateUrl: './home.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './home.scss',
