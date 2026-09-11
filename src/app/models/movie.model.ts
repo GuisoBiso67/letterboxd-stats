@@ -35,8 +35,8 @@ export interface TmdbMovieDetails {
   genres: { id: number; name: string }[];
   production_countries: { iso_3166_1: string; name: string }[];
   credits: {
-    cast: { id: number; name: string; character: string }[];
-    crew: { id: number; name: string; job: string }[];
+    cast: { id: number; name: string; character: string; profile_path: string | null }[];
+    crew: { id: number; name: string; job: string; profile_path: string | null}[];
   };
 }
 
@@ -45,9 +45,13 @@ export interface StatItem {
   count: number;
 }
 
+export interface PersonStatItem extends StatItem {
+  profilePath: string;
+}
+
 export interface StatsList {
   genres: StatItem[];
   countries: StatItem[];
-  cast: StatItem[];
-  directors: StatItem[];
+  cast: PersonStatItem[];
+  directors: PersonStatItem[];
 }

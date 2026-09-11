@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Movie, StatItem, StatsList } from '../models/movie.model';
+import { Movie, StatItem, StatsList, PersonStatItem } from '../models/movie.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Stats {
   compute(movies: Movie[]): StatsList{
-    const statsList = {} as StatsList
+    const statsList = {} as StatsList;
 
     const genreCount: Record<string, number> = {};
     const countryCount: Record<string, number> = {};
-    const castCount: Record<string, number> = {};
-    const directorCount: Record<string, number> = {};
+    const castCount: Record<string, PersonStatItem> = {};
+    const directorCount: Record<string, PersonStatItem> = {};
 
     for (const movie of movies) {
       for (const genre of movie.genres ?? []) {
@@ -23,12 +23,32 @@ export class Stats {
       }
 
       for (const cast of movie.credits?.cast ?? []){
-        castCount[cast.name] = (castCount[cast.name] ?? 0) + 1;
+        if(castCount[cast.name]){
+          castCount[cast.name].count += 1
+        }else{
+          castCount[cast.name] = {
+              term: cast.name,
+              count: 1,
+              profilePath: cast.profile_path
+                ? `https://image.tmdb.org/t/p/w185${cast.profile_path}`
+                : ''
+            };
+        }
       }
 
       for (const director of movie.credits?.crew ?? []){
         if(director.job === "Director"){
-          directorCount[director.name] = (directorCount[director.name] ?? 0) + 1;
+          if (directorCount[director.name]) {
+            directorCount[director.name].count += 1;
+          } else {
+            directorCount[director.name] = {
+              term: director.name,
+              count: 1,
+              profilePath: director.profile_path 
+                ? `https://image.tmdb.org/t/p/w185${director.profile_path}`
+                : ''
+            };
+          }
         }
       }
     }
@@ -45,18 +65,14 @@ export class Stats {
         term,
         count
       }));
-    const entriesCast: StatItem[] = Object.entries(castCount)
-      .sort((a, b) => b[1] - a[1]) // Ordena do maior pro menor;
-      .map(([term, count]) => ({
-        term,
-        count
-      }));
-    const entriesDirectors: StatItem[] = Object.entries(directorCount)
-      .sort((a, b) => b[1] - a[1]) // Ordena do maior pro menor;
-      .map(([term, count]) => ({
-        term,
-        count
-      }));
+    const entriesCast: PersonStatItem[] = Object.entries(castCount)
+      .sort(([, aItem], [, bItem]) => bItem.count - aItem.count) // Maior para o menor
+      .map(([, personStatItem]) => (personStatItem
+      ));
+    const entriesDirectors: PersonStatItem[] = Object.entries(directorCount)
+      .sort(([, aItem], [, bItem]) => bItem.count - aItem.count) // Maior para o menor
+      .map(([, personStatItem]) => (personStatItem
+      ));
 
     statsList.genres = entriesGenre;
     statsList.countries = entriesCountries;
