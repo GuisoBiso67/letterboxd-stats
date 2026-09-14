@@ -1,1 +1,16 @@
-<p>directors works!</p>
+@if (stateService.stats_data()) {
+  @for (t of top4; track t.term) {
+    <li>
+      <img [src]="t.profilePath || 'assets/profile_avatar_placeholder.png'">
+      {{ t.term }}: {{ t.count }}
+    </li>
+  }
+
+  <br>
+
+  @for (r of rest; track r.term) {
+      <li>
+        {{ r.term }}: {{ r.count }}
+      </li>
+  }
+}
