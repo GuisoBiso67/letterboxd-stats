@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { StatItem } from '../../models/movie.model';
 import { NgxEchartsDirective } from 'ngx-echarts';
+import { State } from '../../services/state';
 
 @Component({
   imports: [NgxEchartsDirective],
@@ -9,13 +10,15 @@ import { NgxEchartsDirective } from 'ngx-echarts';
   templateUrl: './genres.html',
 })
 export class Genres {
-  @Input() genres: StatItem[] = [];
+  //@Input() genres: StatItem[] = [];
+
+  readonly stateService = inject(State);
 
   // pieData transforma os dados;
   // chartOptions monta a configuração completa usando pieData;
 
   get pieData() {
-    return this.genres.map(item => ({
+    return this.stateService.stats_data()?.genres.map(item => ({
       name: item.term,
       value: item.count
     }));

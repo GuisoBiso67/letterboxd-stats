@@ -22,7 +22,3 @@
     <li>{{ movie.title }}</li>
   }
 }
-
-@if (stateService.stats_data()) {
-  <app-genres [genres]="stateService.stats_data()!.genres"></app-genres>
-}
