@@ -33,6 +33,7 @@ export interface TmdbMovie {
 export interface TmdbMovieDetails {
   id: number;
   genres: { id: number; name: string }[];
+  origin_country: string[];
   production_countries: { iso_3166_1: string; name: string }[];
   credits: {
     cast: { id: number; name: string; character: string; profile_path: string | null }[];

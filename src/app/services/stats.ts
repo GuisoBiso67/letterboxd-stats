@@ -13,13 +13,16 @@ export class Stats {
     const castCount: Record<string, PersonStatItem> = {};
     const directorCount: Record<string, PersonStatItem> = {};
 
+    const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+
     for (const movie of movies) {
       for (const genre of movie.genres ?? []) {
         genreCount[genre.name] = (genreCount[genre.name] ?? 0) + 1;
       }
 
-      for (const country of movie.production_countries ?? []){
-        countryCount[country.name] = (countryCount[country.name] ?? 0) + 1;
+      for (const code of movie.origin_country ?? []) {
+        const countryName = regionNames.of(code) || code;
+        countryCount[countryName] = (countryCount[countryName] ?? 0) + 1;
       }
 
       for (const cast of movie.credits?.cast ?? []){
