@@ -5,6 +5,24 @@ import { Movie, StatItem, StatsList, PersonStatItem } from '../models/movie.mode
   providedIn: 'root',
 })
 export class Stats {
+
+  // corrige divergencia entre o "Intl" e o src/assets/world.json
+  // fonte mapa: https://geojson-maps.kyd.au/
+  
+  private readonly geoNameFix: Record<string, string> = {
+    'United States': 'United States of America',
+    'Dominican Republic': 'Dominican Rep.',
+    'Equatorial Guinea': 'Eq. Guinea',
+    'Solomon Islands': 'Solomon Is.',
+    'Bosnia & Herzegovina': 'Bosnia and Herz.',
+    'Central African Republic': 'Central African Rep.',
+    'Congo - Kinshasa': 'Dem. Rep. Congo',
+    'Congo - Brazzaville': 'Congo',
+    'South Sudan': 'S. Sudan',
+    'Western Sahara': 'W. Sahara',
+    'Czechia': 'Czech Rep.'
+  };
+
   compute(movies: Movie[]): StatsList{
     const statsList = {} as StatsList;
 
@@ -22,7 +40,8 @@ export class Stats {
 
       for (const code of movie.origin_country ?? []) {
         const countryName = regionNames.of(code) || code;
-        countryCount[countryName] = (countryCount[countryName] ?? 0) + 1;
+        const geoName = this.geoNameFix[countryName] ?? countryName;
+        countryCount[geoName] = (countryCount[geoName] ?? 0) + 1;
       }
 
       for (const cast of movie.credits?.cast ?? []){
