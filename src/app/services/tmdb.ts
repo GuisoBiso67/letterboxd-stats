@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Observable, switchMap, map, throwError } from 'rxjs';
+import { Observable, switchMap, map, throwError, catchError, of } from 'rxjs';
 import { Movie, TmdbMovieDetails, TmdbSearchResponse } from '../models/movie.model';
 
 @Injectable({ providedIn: 'root' })
@@ -37,10 +37,16 @@ export class TmdbService {
           return throwError(() => new Error(`Movie was not found: ${movie.title}`));
         }
         const id = response.results[0].id;
-        return this.getMovieDetails(id);        
+        return this.getMovieDetails(id);
       }),
       map(details => {
         return { ...movie, ...details };
+      }),
+      // Captura erros locais (404, falha na busca ou erro na API);
+      catchError(err => {
+        console.warn(`Skipping movie "${movie.title}":`, err.message || err);
+        // Retorna o filme original sem alterações para não quebrar o fluxo;
+        return of(movie);
       })
     );
   }
